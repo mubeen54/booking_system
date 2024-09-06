@@ -2,33 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    /**
-     * Method search
-     *
-     * @param Request $request [explicite description]
-     *
-     * @return void
-     */
-    public function search(Request $request)
-    {
-        $validated = $request->validate([
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-        ]);
-
-        $radius = 25;
-        $services = Service::selectRaw("*, (6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) AS distance", [$validated['lat'], $validated['lng'], $validated['lat']])
-            ->having("distance", "<", $radius)
-            ->get();
-
-        return response()->json($services);
-    }
 
     /**
      * Method storeService
@@ -39,13 +19,24 @@ class ServiceController extends Controller
      */
     public function storeService(Request $request)
     {
-        $service = Service::create([
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'price' => $request['price'],
-            'provider_id' => $request['provider_id'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'provider_id' => 'required|exists:providers,id',
+            ]);
 
-        return response()->json($service, 201);
+            $service = Service::create([
+                'name' => $validated['name'],
+                'description' => $validated['description'],
+                'price' => $validated['price'],
+                'provider_id' => $validated['provider_id'],
+            ]);
+
+            return Api::setResponse('service', $service);
+        } catch (\Throwable $th) {
+            return Api::setError($th->getMessage());
+        }
     }
 }

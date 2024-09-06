@@ -17,7 +17,7 @@ class ProviderControllerTest extends TestCase
     {
         $this->assertTrue(true);
     }
-    
+
     /**
      * Method test_add_provider_creates_provider
      *

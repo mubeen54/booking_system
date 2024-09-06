@@ -20,8 +20,6 @@ class BookingConfirmed implements ShouldBroadcast
     public function __construct(Booking $booking)
     {
         $this->booking = $booking;
-
-        Log::info('BookingConfirmed event fired for booking ID: ' . $booking->id);
     }
 
     public function broadcastOn()
