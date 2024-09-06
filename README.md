@@ -38,7 +38,7 @@ Clone the repository:
 
 bash
 Copy code
-git clone https://github.com/your-repo/booking-provider-api.git
+git clone https://github.com/mubeen54/booking_system.git
 Install dependencies:
 
 composer install
